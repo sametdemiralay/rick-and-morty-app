@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState, FC } from "react";
+import axios from "axios";
+import NavComp from "./components/Navbar";
+import CardComp from "./components/Card";
+import { RickAndMortyDataType, Result } from "./types";
 
-function App() {
+const App: FC = () => {
+  const [mainData, setMainData] = useState<Result[]>([]);
+
+  const getMainData = async () => {
+    try {
+      const { data } = await axios.get<RickAndMortyDataType>(
+        "https://rickandmortyapi.com/api/character"
+      );
+      setMainData(data.results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getMainData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavComp />
+      <div className='container text-center'>
+        <div className='row justify-content-start'>
+          {mainData.map((item, idx) => (
+            <CardComp character={item} key={idx} />
+          ))}
+        </div>
+      </div>
     </div>
   );
-}
+};
 
 export default App;
